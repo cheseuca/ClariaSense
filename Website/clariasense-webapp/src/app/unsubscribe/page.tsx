@@ -53,6 +53,7 @@ export default function UnsubscribePage() {
                 <div className="text-center">
                     <h2 className="text-2xl font-bold mb-4">Unsubscribe</h2>
                     <p>{status}</p>
+                    <p>You may close this tab</p>
                 </div>
             </main>
             <footer className="bg-white border-t border-gray-200 py-4 mt-8">

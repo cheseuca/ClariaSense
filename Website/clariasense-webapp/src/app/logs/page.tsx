@@ -93,16 +93,16 @@ export default function Logs() {
       {/* MAIN CONTENT */}
       <main className="pt-28 px-6 sm:px-10">
         <div className="mb-6">
-          <button
+            <button
             onClick={() => setFilter('logs')}
-            className={`filter-btn ${filter === 'logs' ? 'bg-[#1341b1] text-white' : 'hover:bg-blue-500 hover:text-white'}`}>
+            className={`filter-btn ${filter === 'logs' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black hover:bg-blue-500 hover:text-white'}`}>
             Logs
-          </button>
-          <button
+            </button>
+            <button
             onClick={() => setFilter('errorLogs')}
-            className={`filter-btn error ${filter === 'errorLogs' ? 'bg-red-500 text-white' : ''}`}>
+            className={`filter-btn error ${filter === 'errorLogs' ? 'bg-red-500 text-white' : 'bg-gray-200 text-black hover:bg-red-500 hover:text-white'}`}>
             Out of Parameter Logs
-</button>
+            </button>
         </div>
       </main>
       <footer className="bg-white border-t border-gray-200 py-4 mt-8 w-full fixed bottom-0 left-0">
@@ -130,9 +130,18 @@ export default function Logs() {
                 Time Recorded: <span className="text-gray-800 font-medium">{logs.timestamp}</span>
               </p>
               <div className="space-y-2 text-sm text-gray-700">
-                <p><span className="inline mr-2 text-blue-500"><FaFlask /></span>pH: {Math.min(...logs.ph)} - {Math.max(...logs.ph)} pH</p>
-                <p><span className="inline mr-2 text-purple-500"><FaTint /></span>TDS: {Math.min(...logs.tds)} - {Math.max(...logs.tds)} ppm</p>
-                <p><span className="inline mr-2 text-orange-500"><FaTemperatureHigh /></span>Temp: {Math.min(...logs.temp)} - {Math.max(...logs.temp)} °C</p>
+                <div className="flex items-center">
+                  <span className="inline mr-2 text-blue-500"><FaFlask /></span>
+                  <p>pH: {Math.min(...logs.ph)} - {Math.max(...logs.ph)} pH</p>
+                </div>
+                <div className="flex items-center">
+                  <span className="inline mr-2 text-purple-500"><FaTint /></span>
+                  <p>TDS: {Math.min(...logs.tds)} - {Math.max(...logs.tds)} ppm</p>
+                </div>
+                <div className="flex items-center">
+                  <span className="inline mr-2 text-orange-500"><FaTemperatureHigh /></span>
+                  <p>Temp: {Math.min(...logs.temp)} - {Math.max(...logs.temp)} °C</p>
+                </div>
               </div>
               </motion.div>
             ))}
@@ -153,15 +162,24 @@ export default function Logs() {
               <p className="text-sm font-medium text-gray-600 mb-2">
           Time Recorded: <span className="text-gray-800">{logs.timestamp}</span>
               </p>
-              <p className="text-red-600 font-semibold text-sm mb-2">
-          <span className="inline mr-2"><FaExclamationTriangle /></span>
-          Out of Range: {Array.isArray(logs.errorParameters) ? logs.errorParameters.join(', ') : 'N/A'}
-              </p>
-              <div className="space-y-2 text-sm text-gray-700">
-          <p><span className="inline mr-2 text-blue-500"><FaFlask /></span>pH: {logs.ph} pH</p>
-          <p><span className="inline mr-2 text-purple-500"><FaTint /></span>TDS: {logs.tds} ppm</p>
-          <p><span className="inline mr-2 text-orange-500"><FaTemperatureHigh /></span>Temp: {logs.temp} °C</p>
-              </div>
+                <div className="flex items-center text-red-600 font-semibold text-sm mb-2">
+                <span className="inline mr-2"><FaExclamationTriangle /></span>
+                <p>Out of Range: {Array.isArray(logs.errorParameters) ? logs.errorParameters.join(', ') : 'N/A'}</p>
+                </div>
+                <div className="space-y-2 text-sm text-gray-700">
+                <div className="flex items-center">
+                  <span className="inline mr-2 text-blue-500"><FaFlask /></span>
+                  <p>pH: {logs.ph} pH</p>
+                </div>
+                <div className="flex items-center">
+                  <span className="inline mr-2 text-purple-500"><FaTint /></span>
+                  <p>TDS: {logs.tds} ppm</p>
+                </div>
+                <div className="flex items-center">
+                  <span className="inline mr-2 text-orange-500"><FaTemperatureHigh /></span>
+                  <p>Temp: {logs.temp} °C</p>
+                </div>
+                </div>
             </motion.div>
           ))}
         </div>

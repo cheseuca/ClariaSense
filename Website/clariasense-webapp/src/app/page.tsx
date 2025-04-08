@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import {onValue, ref, off } from 'firebase/database';
 import { database, firestore } from './library/firebaseconfig';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link'; 
@@ -25,23 +25,37 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Store the email in Firestore
+  
     const userRef = collection(firestore, "subscribers");
-
+  
+    // Normalize email (trim + lowercase)
+    const normalizedEmail = email.trim().toLowerCase();
+  
     try {
+      // Check if email already exists
+      const existingQuery = query(userRef, where("email", "==", normalizedEmail));
+      const querySnapshot = await getDocs(existingQuery);
+  
+      if (!querySnapshot.empty) {
+        alert("You're already subscribed with this email.");
+        return;
+      }
+  
+      // Add new subscription
       await addDoc(userRef, {
-        email,
+        email: normalizedEmail,
         subscribedAt: serverTimestamp(),
       });
+  
       alert("Subscription successful! You will receive updates soon.");
-      setEmail("");  // Clear input field
+      setEmail(""); // Clear input field
+  
     } catch (error) {
       console.error("Error subscribing:", error);
       alert("Failed to subscribe.");
     }
   };
-
+  
   useEffect(() => {
     const sensorsRef = ref(database, "sensors");
 
@@ -167,10 +181,10 @@ export default function Home() {
             <br />
             <p className="text-center text-gray-500 mt-4">Want to know if the Aquarium is not in the best environment for fish?</p>
             <p className="text-center text-gray-500">Subscribe to our newsletter for updates!</p>
-          <form 
+            <form 
             onSubmit={handleSubmit} 
-            className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8 mx-auto max-w-md p-4 w-full"
-          >
+            className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8 mx-auto max-w-md p-4 w-full mb-20"
+            >
             <input
             type="email"
             value={email}
@@ -185,15 +199,15 @@ export default function Home() {
             >
             Subscribe
             </button>
-          </form>
+            </form>
              </main>
              <footer className="bg-white border-t border-gray-200 py-4 mt-8 w-full fixed bottom-0 left-0">
-        <div className="max-w-screen-xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm text-center w-full">
-        © {new Date().getFullYear()} ClariaSense. CPE 4 - 3 Group 7 S.Y. 2024-2025. All rights reserved.
-          </p>
-        </div>
-      </footer>
+          <div className="max-w-screen-xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-gray-500 text-sm text-center w-full">
+          © {new Date().getFullYear()} ClariaSense. CPE 4 - 3 Group 7 S.Y. 2024-2025. All rights reserved.
+            </p>
+          </div>
+          </footer>
         </div>
     );
 }
