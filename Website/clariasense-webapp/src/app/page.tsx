@@ -5,6 +5,7 @@ import { database, firestore } from './library/firebaseconfig';
 import { collection, addDoc, serverTimestamp, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import ReactPlayer from 'react-player';
 import Link from 'next/link'; 
 
 export default function Home() {
@@ -18,10 +19,22 @@ export default function Home() {
     tds: "ppm",
     temp: "°C",
   };  
+  const NORMAL_RANGES: Record<string, { min: number; max: number; text: string }> = {
+    ph: { min: 6.5, max: 7.5, text: "Normal Range: 6.5pH - 7.5pH" },
+    tds: { min: 100, max: 300, text: "Normal Range: 100ppm - 300ppm" },
+    temp: { min: 29, max: 32, text: "Normal Range: 29°C - 32°C" },
+  };
 
   const [email, setEmail] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [data, setData] = useState<{ id: string; value: number }[]>([]);
+
+  // Function to check if value is out of range
+  const isOutOfRange = (id: string, value: number) => {
+    const range = NORMAL_RANGES[id];
+    if (!range) return false;
+    return value < range.min || value > range.max;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,38 +160,66 @@ export default function Home() {
     {data.map((value, index) => {
       const sensor = SENSOR_LABELS[value.id] ?? value.id;
       const unit = SENSOR_UNITS[value.id] ?? " ";
+      const normalRange = NORMAL_RANGES[value.id]?.text ?? "";
+      const isOutOfNormalRange = isOutOfRange(value.id, value.value);
       
       const borderColor = value.id === 'ph' 
-        ? 'border-red-400'
+        ? 'border-blue-400'
         : value.id === 'tds'
-        ? 'border-yellow-400'
+        ? 'border-blue-400'
         : value.id === 'temp'
         ? 'border-blue-400'
         : 'border-gray-300';
 
       const valueColor = value.id === 'ph'
-        ? 'text-red-500'
+        ? 'text-blue-500'
         : value.id === 'tds'
-        ? 'text-yellow-500'
+        ? 'text-blue-500'
         : value.id === 'temp'
         ? 'text-blue-500'
         : 'text-gray-800';
 
+        const boxClasses = isOutOfNormalRange 
+            ? 'bg-red-50 border-red-500 text-red-800' 
+            : `bg-white ${
+                value.id === 'ph' ? 'border-blue-400' :
+                value.id === 'tds' ? 'border-blue-400' :
+                value.id === 'temp' ? 'border-blue-400' :
+                'border-gray-300'
+              }`;
+
       return (
         <div
-          key={index}
-          className={`bg-white rounded-2xl shadow-md p-6 text-center border-t-4 ${borderColor} hover:shadow-xl transition-all duration-300 overflow-hidden`}>
-          <p className="text-xl font-semibold text-gray-600 mb-2">{sensor}</p>
-          <p className={`text-6xl font-bold font-medium break-words text-[clamp(2rem,5vw,3.5rem)] leading-tight ${valueColor}`}>
-            {value.value}
-            <span className="text-2xl text-gray-500 ml-1">{unit}</span>
-          </p>
-        </div>
-      );
-    })}
-  </div>
+        key={index}
+        className={`rounded-2xl shadow-md p-6 text-center border-t-4 hover:shadow-xl transition-all duration-300 overflow-hidden ${boxClasses}`}>
+        <p className="text-xl font-semibold mb-2">{sensor}</p>
+        <p className={`text-6xl font-bold font-medium break-words text-[clamp(2rem,5vw,3.5rem)] leading-tight ${
+          isOutOfNormalRange ? 'text-red-600' : 
+          value.id === 'ph' ? 'text-blue-500' :
+          value.id === 'tds' ? 'text-blue-500' :
+          value.id === 'temp' ? 'text-blue-500' :
+          'text-gray-800'
+        }`}>
+          {value.value}
+          <span className={`text-2xl ml-1 ${
+            isOutOfNormalRange ? 'text-red-600' : 'text-gray-500'
+          }`}>
+            {unit}
+          </span>
+        </p>
+        <p className={`text-sm mt-2 ${
+          isOutOfNormalRange ? 'text-red-600' : 'text-gray-500'
+        }`}>
+          {normalRange}
+        </p>
+      </div>
+    );
+  })}
+</div>
   <br />
             <br />
+<br/>
+<br/>
             <p className="text-center text-gray-500 mt-4">Want to know if the Aquarium is not in the best environment for fish?</p>
             <p className="text-center text-gray-500">Subscribe to our newsletter for updates!</p>
             <form 
