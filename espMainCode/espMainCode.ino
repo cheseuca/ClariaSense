@@ -5,11 +5,6 @@
 #include "time.h"
 #include <ArduinoJson.h>
 
-#define WIFI_SSID "ssid"
-#define WIFI_PASSWORD "password"
-#define API_KEY "apikey"
-#define FIREBASE_PROJECT_ID "clariasense"
-#define DATABASE_URL "dburl"
 
 FirebaseData fbdo;
 FirebaseAuth auth;
@@ -24,12 +19,8 @@ int lastLoggedHour = -1; // 🔹 Stores the last logged hour to prevent duplicat
 bool signupOK = false;  // Declare globally
 
 unsigned long sendDataPrevMillis = 0; // Declare to avoid scope issues
-float drainLiters = 0.0;
-float fillLiters = 0.0;
-unsigned long fillStartTime = 0;
-unsigned long dumpStartTime = 0;
+unsigned long fillWaitStartTime = 0;
 bool inFillWaitPeriod = false;
-
 
 #define RELAY_1 21
 #define RELAY_2 19
@@ -42,9 +33,14 @@ float latestDistance = 0.0;
 float phVoltage = 0.0;
 
 int mode = 1;
+float drainLiters = 0.0;
+float fillLiters = 0.0;
+unsigned long fillStartTime = 0;
 unsigned long fillDuration = 0;
-unsigned long fillWaitStartTime = 0;
-bool fillComplete = false;
+unsigned long dumpStartTime = 0;
+unsigned long drainStartTime = 0;
+unsigned long pauseStartTime = 0;
+unsigned long lastCheckTime = 0;
 
 unsigned long lastLoggedTime = 0;  // Variable to track last log time for hourly logs
 unsigned long lastParamLogTime = 0;  // Variable to track last log time for parameter out-of-range logs
@@ -61,99 +57,101 @@ void checkMode() {
 
   switch (mode) {
     case 1: { // Continuous Mode
-      bool paramsOK = (latestTDS < 300 && latestPH < 8.9 && latestTemp < 33);
-
-      if (paramsOK) {
-        digitalWrite(RELAY_1, LOW);
-        digitalWrite(RELAY_2, LOW);
+      if (latestTDS < 300 && latestPH < 8.9 && latestTemp < 33) {
+        digitalWrite(RELAY_1, LOW);   // Continuous ON
+        digitalWrite(RELAY_2, LOW);   // Continuous ON
+        digitalWrite(RELAY_3, HIGH);  // Drain OFF
+        digitalWrite(RELAY_4, HIGH);  // Fill OFF
         Serial.println("✅ Mode 1: Continuous Mode ACTIVE (Relay 1 & 2 ON)");
       } else {
-        stopAllRelays();
-        mode = 2;
+        mode = 2; // Switch to Drain Mode
         drainLiters = 0.0;
         fillLiters = 0.0;
         fillWaitStartTime = 0;
         inFillWaitPeriod = false;
-        fillComplete = false;
+        drainStartTime = millis();  // 
         Serial.println("⚠️ Parameters out of range! Switching to Mode 2 (Drain/Fill Mode)");
       }
       break;
     }
 
-    case 2: { // Drain/Fill Mode
-      drainLiters += latestL1;
-      fillLiters += latestL3;
+    case 2: { // Drain Mode
+      digitalWrite(RELAY_1, HIGH);
+      digitalWrite(RELAY_2, LOW);
+      digitalWrite(RELAY_3, HIGH);   // Drain ON
+      digitalWrite(RELAY_4, HIGH);  // Fill OFF
 
-      Serial.print("🚰 Mode 2: Draining... Drained: ");
-      Serial.print(drainLiters, 2);
-      Serial.print(" L | Filled: ");
-      Serial.print(fillLiters, 2);
-      Serial.println(" L");
+      unsigned long drainElapsed = (millis() - drainStartTime) / 1000;
+      Serial.print("🧯 Mode 2: Draining... ");
+      Serial.print(drainElapsed);
+      Serial.println(" sec / 12 sec");//5 liters
 
-      if (drainLiters >= 5.0 && !inFillWaitPeriod) {
-        stopAllRelays();
-        inFillWaitPeriod = true;
-        fillWaitStartTime = now;
-        Serial.println("🕒 Drain threshold reached. Starting 2-minute wait period before filling");
+      if (drainElapsed >= 12) {
+        pauseStartTime = millis();  // 
+        mode = 3;
+        Serial.println("✅ Drain complete (5L). Switching to Mode 3 (Pause)");
       }
-
-      if (inFillWaitPeriod) {
-        unsigned long waitElapsed = (now - fillWaitStartTime) / 1000;
-        Serial.print("⏳ Fill wait period: ");
-        Serial.print(waitElapsed);
-        Serial.println(" sec / 120 sec");
-
-        if (waitElapsed >= 120 && !fillComplete) {
-          digitalWrite(RELAY_4, LOW);
-          digitalWrite(RELAY_1, HIGH);
-          digitalWrite(RELAY_2, HIGH);
-          fillStartTime = now;
-          fillComplete = true;
-          Serial.println("✅ 2-minute wait complete. Relay 4 ON for filling.");
-        }
-
-        // Assume filling completes when filled = drained (simple logic)
-        if (fillComplete && fillLiters >= drainLiters && drainLiters >= 5.0) {
-          stopAllRelays();
-          fillComplete = false;
-          mode = 3;
-          dumpStartTime = now;
-          Serial.println("➡️ Filling complete. Switching to Mode 3 (Dump/Continuous Mode)");
-        }
-      } else {
-        digitalWrite(RELAY_1, LOW); // keep draining if not waiting
-        digitalWrite(RELAY_2, HIGH);
-        digitalWrite(RELAY_4, HIGH);
-      }
-
       break;
     }
 
-    case 3: { // Dump/Continuous Mode
-      unsigned long dumpElapsed = (now - dumpStartTime) / 1000;
-
-      digitalWrite(RELAY_1, LOW);
-      digitalWrite(RELAY_2, LOW);
-      digitalWrite(RELAY_3, LOW);
+    case 3: { // Pause Mode
+      digitalWrite(RELAY_1, HIGH);
+      digitalWrite(RELAY_2, HIGH);
+      digitalWrite(RELAY_3, HIGH);
       digitalWrite(RELAY_4, HIGH);
-      fillLiters = 0.0;
-      drainLiters = 0.0;
-      inFillWaitPeriod = false;
 
-      Serial.print("🗑️ Mode 3: Dumping with Continuous Mode... Time: ");
+      unsigned long pauseElapsed = (millis() - pauseStartTime) / 1000;
+      Serial.print("⏳ Mode 3: Pause... ");
+      Serial.print(pauseElapsed);
+      Serial.println(" sec / 60 sec");
+
+      if (pauseElapsed >= 60) {
+        fillStartTime = millis();
+        mode = 4;
+        Serial.println("🪣 Pause complete. Switching to Mode 4 (Fill ~3L)");
+      }
+      break;
+    }
+
+    case 4: { // Fill Mode
+      digitalWrite(RELAY_1, HIGH);
+      digitalWrite(RELAY_2, HIGH);
+      digitalWrite(RELAY_3, HIGH);
+      digitalWrite(RELAY_4, LOW);   // Fill ON
+
+      unsigned long fillElapsed = (millis() - fillStartTime) / 1000;
+      Serial.print("💧 Mode 4: Filling... ");
+      Serial.print(fillElapsed);
+      Serial.println(" sec / 24 sec");// 10 liters
+
+      if (fillElapsed >= 24) {
+        dumpStartTime = millis();
+        mode = 5;
+        Serial.println("✅ Fill complete (~10L). Switching to Mode 5 (Dump + Continuous)");
+      }
+      break;
+    }
+
+    case 5: { // Dump + Continuous
+      digitalWrite(RELAY_1, HIGH);   // Continuous off
+      digitalWrite(RELAY_2, HIGH);   // Continuous off
+      digitalWrite(RELAY_3, LOW);   // Dump ON
+      digitalWrite(RELAY_4, HIGH);  // Fill OFF
+
+      unsigned long dumpElapsed = (millis() - dumpStartTime) / 1000;
+      Serial.print("🚿 Mode 5: Dump... ");
       Serial.print(dumpElapsed);
-      Serial.println(" sec | Target: 30 sec");
+      Serial.println(" sec / 30 sec");
 
       if (dumpElapsed >= 30) {
-        stopAllRelays();
         mode = 1;
-        Serial.println("✅ Dump complete. Returning to Mode 1 (Continuous Mode)");
+        lastCheckTime = millis();  
+        Serial.println("✅ Dump done. Returning to Mode 1");
       }
       break;
     }
   }
 }
-
 
 
 
@@ -263,62 +261,49 @@ void logHourlyData(float latestTemp, float latestTDS, float latestPH) {
 unsigned long lastErrorLogTime = 0;
 
 void logParameterOutOfRange(float latestTemp, float latestTDS, float latestPH) {
-    // Check if any parameter is out of range
-    if ((latestTemp > 33) ||
-        (latestTDS > 299) ||
-        (latestPH > 8.9)) {
-        
-        // Get current time in milliseconds
+    bool isOutOfRange = false;
+    FirebaseJsonArray errorParamsArray;
+
+    // Determine which parameters are out of range
+    if (!latestTemp < 33) {
+        FirebaseJson errorParam;
+        errorParam.set("stringValue", "temperature");
+        errorParamsArray.add(errorParam);
+        isOutOfRange = true;
+    }
+    if (latestTDS > 299) {
+        FirebaseJson errorParam;
+        errorParam.set("stringValue", "TDS");
+        errorParamsArray.add(errorParam);
+        isOutOfRange = true;
+    }
+    if (latestPH > 8.9) {
+        FirebaseJson errorParam;
+        errorParam.set("stringValue", "pH");
+        errorParamsArray.add(errorParam);
+        isOutOfRange = true;
+    }
+
+    // Proceed only if something is out of range
+    if (isOutOfRange) {
         unsigned long currentTime = millis();
-        
-        // Only log if it's been at least 60 seconds (60000 milliseconds) since the last log
-        if (currentTime - lastErrorLogTime >= 60000) {
-            // Update the last error log time
+        if ((currentTime - lastErrorLogTime >= 60000) || (currentTime < lastErrorLogTime)) {
             lastErrorLogTime = currentTime;
-            
-            String timestamp = getFormattedTime(); // Get Manila time
-            
-            // Create unique document ID that's Firestore-compatible
-            // Replace any characters that aren't allowed in Firestore document IDs
+
+            String timestamp = getFormattedTime();
             String docID = timestamp;
             docID.replace(":", "-");
             docID.replace(" ", "_");
             docID.replace("/", "-");
-            
-            String documentPath = "error_logs/" + docID; // Store logs under "error_logs" collection
+            String documentPath = "error_logs/" + docID;
 
-            // Create FirebaseJson object for Firestore data
             FirebaseJson content;
-            
-            // Set proper field values with correct types
             content.set("fields/temp/doubleValue", latestTemp);
             content.set("fields/tds/doubleValue", latestTDS);
             content.set("fields/ph/doubleValue", latestPH);
             content.set("fields/timestamp/stringValue", timestamp);
-            
-            // Also add which parameter(s) triggered the error
-            FirebaseJsonArray errorParamsArray;
-            
-            if (latestTemp > 32) {
-                FirebaseJson errorParam;
-                errorParam.set("stringValue", "temperature");
-                errorParamsArray.add(errorParam);
-            }
-            if (latestTDS > 299) {
-                FirebaseJson errorParam;
-                errorParam.set("stringValue", "TDS");
-                errorParamsArray.add(errorParam);
-            }
-            if (latestPH > 8.9) {
-                FirebaseJson errorParam;
-                errorParam.set("stringValue", "pH");
-                errorParamsArray.add(errorParam);
-            }
-            
-            
             content.set("fields/errorParameters/arrayValue/values", errorParamsArray);
 
-            // Log data to Firestore
             Serial.print("Logging out-of-range parameters to Firestore... ");
             if (Firebase.Firestore.createDocument(&fbdo, FIREBASE_PROJECT_ID, "", documentPath.c_str(), content.raw())) {
                 Serial.println("Success!");
@@ -328,6 +313,7 @@ void logParameterOutOfRange(float latestTemp, float latestTDS, float latestPH) {
         }
     }
 }
+
 
 
 String getFormattedTime() {
@@ -345,7 +331,6 @@ String getFormattedTime() {
 void setup() {
   Serial.begin(115200);
   Serial2.begin(9600, SERIAL_8N1, 16, 17);
-  bool fillComplete = false;
 
   // 🔹 Connect to Wi-Fi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -388,7 +373,7 @@ void setup() {
 }
 
 void loop() {
-  // Manual test input (for debugging via Serial Monitor)
+  // ✅ Step 1: Manual test via Serial (NOT Serial2)
   if (Serial.available()) {
     char input = Serial.read();
     if (input == '1') {
@@ -405,9 +390,10 @@ void loop() {
       mode = 3;
       dumpStartTime = millis();
       Serial.println("▶️ Manual switch: Mode 3");
-    }
+    } 
   }
 
+  // ✅ Step 2: Read JSON from Serial2 and update sensors
   while (Serial2.available()) {
     String data = Serial2.readStringUntil('\n');
     data.trim();
@@ -432,8 +418,10 @@ void loop() {
     }
   }
 
+  // ✅ Step 3: Run mode logic
   checkMode();
 
+  // ✅ Step 4: Firebase updates
   if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 1000 || sendDataPrevMillis == 0)) {
     sendDataPrevMillis = millis();
     Firebase.RTDB.setFloat(&fbdo, "sensors/temp", latestTemp);
@@ -446,6 +434,7 @@ void loop() {
     Firebase.RTDB.setFloat(&fbdo, "test/l3", latestL3);
   }
 
+  // ✅ Step 5: Logging functions
   logHourlyData(latestTemp, latestTDS, latestPH);
   logParameterOutOfRange(latestTemp, latestTDS, latestPH);
 }

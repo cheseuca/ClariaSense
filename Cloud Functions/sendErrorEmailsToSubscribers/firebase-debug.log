@@ -1,0 +1,70 @@
+[debug] [2025-04-08T07:19:56.834Z] ----------------------------------------------------------------------
+[debug] [2025-04-08T07:19:56.837Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Windows 10\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-04-08T07:19:56.838Z] CLI Version:   14.1.0
+[debug] [2025-04-08T07:19:56.838Z] Platform:      win32
+[debug] [2025-04-08T07:19:56.838Z] Node Version:  v22.14.0
+[debug] [2025-04-08T07:19:56.838Z] Time:          Tue Apr 08 2025 15:19:56 GMT+0800 (Philippine Standard Time)
+[debug] [2025-04-08T07:19:56.839Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-08T07:19:56.845Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-08T07:19:56.845Z] > authorizing via signed-in user (chescarellano@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Windows 10\Desktop\4th year dumps\ClariaSense\functions
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-04-08T07:20:05.571Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:05.572Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:05.574Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2025-04-08T07:20:06.615Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-04-08T07:20:06.615Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project clariasense (ClariaSense) 
+[info] 
+=== Functions Setup
+[debug] [2025-04-08T07:20:10.857Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-08T07:20:10.857Z] > authorizing via signed-in user (chescarellano@gmail.com)
+[debug] [2025-04-08T07:20:10.858Z] [iam] checking project clariasense for permissions ["firebase.projects.get"]
+[debug] [2025-04-08T07:20:10.858Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:10.859Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:10.859Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/clariasense:testIamPermissions [none]
+[debug] [2025-04-08T07:20:10.859Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/clariasense:testIamPermissions x-goog-quota-user=projects/clariasense
+[debug] [2025-04-08T07:20:10.859Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/clariasense:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-04-08T07:20:12.096Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/clariasense:testIamPermissions 200
+[debug] [2025-04-08T07:20:12.097Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/clariasense:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-04-08T07:20:12.098Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:12.099Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:12.099Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:12.100Z] Checked if tokens are valid: true, expires at: 1744099076273
+[debug] [2025-04-08T07:20:12.100Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-04-08T07:20:12.100Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/clariasense
+[debug] [2025-04-08T07:20:12.104Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/runtimeconfig.googleapis.com [none]
+[debug] [2025-04-08T07:20:12.105Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/clariasense
+[debug] [2025-04-08T07:20:13.709Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/runtimeconfig.googleapis.com 200
+[debug] [2025-04-08T07:20:13.709Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2025-04-08T07:20:13.727Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/cloudfunctions.googleapis.com 200
+[debug] [2025-04-08T07:20:13.727Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/clariasense/services/cloudfunctions.googleapis.com [omitted]
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] +  Wrote functions/package.json 
+[info] +  Wrote functions/index.js 
+[info] +  Wrote functions/.gitignore 

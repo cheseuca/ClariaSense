@@ -118,7 +118,7 @@ export default function Logs() {
       {filter === 'logs' && (
         <div>
           <p className="italic mx-4 mb-4 text-gray-500">This part is for experimental purposes, might remove depending on the requirements</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-lg">
             {hourlyLogData.map((logs, index) => (
               <motion.div
               key={logs.id}

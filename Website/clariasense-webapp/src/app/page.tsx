@@ -221,7 +221,7 @@ export default function Home() {
 <br/>
 <br/>
             <p className="text-center text-gray-500 mt-4">Want to know if the Aquarium is not in the best environment for fish?</p>
-            <p className="text-center text-gray-500">Subscribe to our newsletter for updates!</p>
+            <p className="text-center text-gray-500">Subscribe for updates!</p>
             <form 
             onSubmit={handleSubmit} 
             className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8 mx-auto max-w-md p-4 w-full mb-20"
