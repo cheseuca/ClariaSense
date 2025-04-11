@@ -1,6 +1,9 @@
 {
+  "/api/unsubscribe/route": "app/api/unsubscribe/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js",
+  "/unsubscribe/page": "app/unsubscribe/page.js",
   "/logs/page": "app/logs/page.js",
+  "/page": "app/page.js",
   "/about/page": "app/about/page.js"
 }
