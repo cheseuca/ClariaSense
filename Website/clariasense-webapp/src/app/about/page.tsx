@@ -110,15 +110,13 @@ export default function About() {
                   <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
                     <h2 className="text-2xl font-bold text-center mb-6">Our Product in Action</h2>
                     <div className="aspect-video w-full overflow-hidden shadow-xl">
-                      <ReactPlayer
-                        url="https://www.youtube.com/watch?v=XbLemOwzdxk"
+                      <iframe
+                        src="https://drive.google.com/file/d/1-C9EtV1HeQVDfTYQuQxplmtBNY34UfBC/preview"
                         width="100%"
                         height="100%"
-                        controls={true}
-                        light={false}
-                        playing={false}
-                        style={{ borderRadius: '0.5rem' }}
-                      />
+                        allow="autoplay"
+                        style={{ borderRadius: '0.5rem', border: 'none' }}
+                      ></iframe>
                     </div>
                     <p className="text-center text-gray-600 mt-4">
                       See how our monitoring system works in real aquarium environments

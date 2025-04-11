@@ -20,9 +20,9 @@ export default function Home() {
     temp: "°C",
   };  
   const NORMAL_RANGES: Record<string, { min: number; max: number; text: string }> = {
-    ph: { min: 6.5, max: 7.5, text: "Normal Range: 6.5pH - 7.5pH" },
-    tds: { min: 100, max: 300, text: "Normal Range: 100ppm - 300ppm" },
-    temp: { min: 29, max: 32, text: "Normal Range: 29°C - 32°C" },
+    ph: { min: 6.5, max: 8.5, text: "Normal Range: 6.5pH - 8.5pH" },
+    tds: { min: 0, max: 300, text: "Maximum Range: 300ppm" },
+    temp: { min: 29, max: 33, text: "Normal Range: 29°C - 33°C" },
   };
 
   const [email, setEmail] = useState("");
