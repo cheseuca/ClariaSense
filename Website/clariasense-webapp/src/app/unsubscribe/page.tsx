@@ -23,7 +23,7 @@ export default function UnsubscribePage() {
                 const res = await fetch(`/api/unsubscribe?email=${encodeURIComponent(emailParam)}`);
                 if (res.ok) {
                     const data = await res.json();
-                    setStatus(data.message || 'You have been unsubscribed.');
+                    setStatus(data.message || 'You have been unsubscribed. You may close this tab.');
                 } else {
                     const errorData = await res.json();
                     setStatus(errorData.error || 'Unsubscribe failed. Please try again.');
