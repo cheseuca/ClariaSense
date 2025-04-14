@@ -5,7 +5,6 @@ import { database, firestore } from './library/firebaseconfig';
 import { collection, addDoc, serverTimestamp, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import ReactPlayer from 'react-player';
 import Link from 'next/link'; 
 
 export default function Home() {
@@ -20,9 +19,9 @@ export default function Home() {
     temp: "°C",
   };  
   const NORMAL_RANGES: Record<string, { min: number; max: number; text: string }> = {
-    ph: { min: 6.5, max: 8.5, text: "Normal Range: 6.5pH - 8.5pH" },
-    tds: { min: 100, max: 300, text: "Normal Range: 100ppm - 300ppm" },
-    temp: { min: 29, max: 32, text: "Normal Range: 29°C - 32°C" },
+    ph: { min: 6.0, max: 9.0, text: "Normal Range: 6.0pH - 9.0pH" },
+    tds: { min: 20, max: 300, text: "Normal Range: 20ppm - 300ppm" },
+    temp: { min: 26, max: 32, text: "Normal Range: 26°C - 32°C" },
   };
 
   const [email, setEmail] = useState("");
@@ -163,22 +162,6 @@ export default function Home() {
       const normalRange = NORMAL_RANGES[value.id]?.text ?? "";
       const isOutOfNormalRange = isOutOfRange(value.id, value.value);
       
-      const borderColor = value.id === 'ph' 
-        ? 'border-blue-400'
-        : value.id === 'tds'
-        ? 'border-blue-400'
-        : value.id === 'temp'
-        ? 'border-blue-400'
-        : 'border-gray-300';
-
-      const valueColor = value.id === 'ph'
-        ? 'text-blue-500'
-        : value.id === 'tds'
-        ? 'text-blue-500'
-        : value.id === 'temp'
-        ? 'text-blue-500'
-        : 'text-gray-800';
-
         const boxClasses = isOutOfNormalRange 
             ? 'bg-red-50 border-red-500 text-red-800' 
             : `bg-white ${
