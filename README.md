@@ -15,11 +15,8 @@ An IoT-powered aquarium monitoring and water replacement system using an ESP32 a
 - Uses **OR logic** to trigger replacement based on:
   - TDS > `300 ppm`
   - pH < `6.0` or > `8.5`
-  - Temp < `20°C` or > `32°C`
-  - NTU < `20` or > `80`
+  - Temp < `26°C` or > `32°C`
 - **Real-time volume tracking** (L) using flow meters
-- Manual test commands via Serial for simulation
-- Timer-based test mode (`flowless`) for bench testing
 
 ---
 
