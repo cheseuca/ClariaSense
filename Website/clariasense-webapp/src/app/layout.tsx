@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import PopUp from "./components/popUp";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body suppressHydrationWarning
         className="font-inter"
       >
+        <PopUp />
         {children}
       </body>
     </html>

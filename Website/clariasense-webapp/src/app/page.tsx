@@ -1,8 +1,8 @@
 'use client';
 import Image from 'next/image'
 import {onValue, ref, off } from 'firebase/database';
-import { database, firestore } from './library/firebaseconfig';
-import { collection, addDoc, serverTimestamp, query, getDocs, where } from "firebase/firestore";
+import { database } from './library/firebaseconfig';
+//import { collection, addDoc, serverTimestamp, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link'; 
@@ -35,7 +35,7 @@ export default function Home() {
     return value < range.min || value > range.max;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  /*const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
     const userRef = collection(firestore, "subscribers");
@@ -66,7 +66,7 @@ export default function Home() {
       console.error("Error subscribing:", error);
       alert("Failed to subscribe.");
     }
-  };
+  };*/
   
   useEffect(() => {
     const sensorsRef = ref(database, "sensors");
@@ -126,11 +126,11 @@ export default function Home() {
 
                     
                     {/* Desktop Menu */}
-<div className="hidden lg:flex space-x-6 items-center text-lg font-medium">
-  <Link href="/"className="text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-4 py-2 rounded-md transition duration-300">Home</Link>
-  <Link href="/logs"className="text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-4 py-2 rounded-md transition duration-300">Logs</Link>
-  <Link href="/about"className="text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-4 py-2 rounded-md transition duration-300">About</Link>
-</div>
+                <div className="hidden lg:flex space-x-6 items-center text-lg font-medium">
+                  <Link href="/"className="text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-4 py-2 rounded-md transition duration-300">Home</Link>
+                  <Link href="/logs"className="text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-4 py-2 rounded-md transition duration-300">Logs</Link>
+                  <Link href="/about"className="text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-4 py-2 rounded-md transition duration-300">About</Link>
+                </div>
 
                 </div>
 
@@ -206,7 +206,7 @@ export default function Home() {
             <p className="text-center text-gray-500 mt-4">Want to know if the Aquarium is not in the best environment for fish?</p>
             <p className="text-center text-gray-500">Subscribe for updates!</p>
             <form 
-            onSubmit={handleSubmit} 
+            //onSubmit={handleSubmit} 
             className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8 mx-auto max-w-md p-4 w-full mb-20"
             >
             <input

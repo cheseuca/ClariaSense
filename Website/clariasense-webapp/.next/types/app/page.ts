@@ -1,4 +1,4 @@
-// File: C:\Users\Windows 10\Desktop\4th year dumps\Clariasense\Website\clariasense-webapp\src\app\page.tsx
+// File: C:\Users\Windows 10\Desktop\Coding\clariasense\ClariaSense\Website\clariasense-webapp\src\app\page.tsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
