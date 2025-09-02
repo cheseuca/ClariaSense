@@ -8,6 +8,8 @@ import { FaFlask, FaTint, FaTemperatureHigh, FaExclamationTriangle } from 'react
 import { firestore } from '../library/firebaseconfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
+export const dynamic = "force-static";
+
 // Fetch hourly logs
 async function fetchLogsData() {
   const logsQuery = query(collection(firestore, 'hourly_logs'), orderBy('timestamp', 'desc'));

@@ -3,7 +3,9 @@ import Image from 'next/image'
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import ReactPlayer from 'react-player';
+//import ReactPlayer from 'react-player';
+
+export const dynamic = "force-static";
 
 export default function About() {
     const [menuOpen, setMenuOpen] = useState(false);

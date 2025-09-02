@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link'; 
 
+export const dynamic = "force-static";
+
 export default function Home() {
   const SENSOR_LABELS: Record<string, string> = {
     ph: "pH Level",

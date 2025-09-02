@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+export const dynamic = "force-static";
 
 export default function BlockingPopup() {
   const [open, setOpen] = useState(true);
